@@ -9,6 +9,28 @@ A security context defines privilege and access control settings for a Pod or Co
 * AppArmor
 * AllowPrivilegeEscalation
 
+The different fields associated with security contexts or Pod Security Policies are as below - 
+
+| Control Aspect | Field Names |
+| ------ | ------ |
+|Running of privileged containers|	privileged|
+|Usage of the root namespaces|	hostPID, hostIPC|
+|Usage of host networking and ports|	hostNetwork, hostPorts|
+|Usage of volume types|	volumes|
+|Usage of the host filesystem|	allowedHostPaths|
+|White list of FlexVolume drivers|	allowedFlexVolumes|
+|Allocating an FSGroup that owns the pod’s volumes|	fsGroup|
+|Requiring the use of a read only root file system	|readOnlyRootFilesystem|
+|The user and group IDs of the container	|runAsUser, supplementalGroups|
+|Restricting escalation to root privileges	|allowPrivilegeEscalation, defaultAllowPrivilegeEscalation|
+|Linux capabilities	|defaultAddCapabilities, requiredDropCapabilities, allowedCapabilities|
+|The SELinux context of the container	|seLinux|
+|The AppArmor profile used by containers|	annotations|
+|The seccomp profile used by containers	|annotations|
+|The sysctl profile used by containers|	annotations|
+
+
+
 ## Demo 1 - 
 
 Create a file securitycontext1.yaml 
