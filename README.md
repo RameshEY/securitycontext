@@ -31,7 +31,127 @@ The different fields associated with security contexts or Pod Security Policies 
 
 
 
-## Demo 1 - 
+## Demo 1 
+
+A pod without security context 
+
+```
+vi simplepod.yaml
+
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: simplepod
+spec:
+  containers:
+  - image: busybox
+    name: busybox
+    args:
+    - sleep
+    - "3600"
+
+```
+
+Create the pod - 
+
+```
+kubectl get pods 
+NAME        READY   STATUS    RESTARTS   AGE
+simplepod   1/1     Running   0          6s
+```
+
+Verify the devices attached to the pod - 
+
+```
+kubectl exec simplepod -it -- ls /dev
+core             null             shm              termination-log
+fd               ptmx             stderr           tty
+full             pts              stdin            urandom
+mqueue           random           stdout           zero
+```
+---
+
+## Demo 2 
+
+Create a pod with privileges at your podspec
+
+```
+vi privilegedpod.yaml
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: privilegedpod
+spec:
+  containers:
+  - image: busybox
+    name: busybox
+    args:
+    - sleep
+    - "3600"
+    securityContext:
+      privileged: true
+
+
+kubectl create -f privilegedpod.yaml 
+```
+
+Verify the devices now - 
+
+```
+kubectl exec privilegedpod -it -- ls /dev
+```
+
+
+---
+
+## Demo 3 
+
+Create a pod with security contexts set at pod as well as container 
+
+```
+vi pod3.yaml
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod3
+spec:
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+  containers:
+  - image: busybox
+    name: busybox
+    args:
+    - sleep
+    - "3600"
+    securityContext:
+      runAsUser: 2000
+      readOnlyRootFilesystem: true
+
+kubectl create -f pod3.yaml 
+```
+
+Verify if container securitycontext has overridden the pod securitycontext
+
+```
+kubectl exec pod3 -it -- /bin/sh
+
+ps -ef 
+PID   USER     TIME  COMMAND
+    1 2000      0:00 sleep 3600
+   18 2000      0:00 /bin/sh
+   23 2000      0:00 ps -ef
+
+
+```
+
+---
+
+## Demo 4 - 
 
 Create a file securitycontext1.yaml 
 ```
@@ -96,7 +216,10 @@ ls -ltra test
 
 Exit the container 
 
-## Demo 2 - Security context for containers 
+
+--- 
+
+## Demo 5 - Security context for containers dropping capabilities
 
 Create a file - demo2.yaml
 
